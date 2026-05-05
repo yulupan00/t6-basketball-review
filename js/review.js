@@ -7,9 +7,9 @@
     "use strict";
 
     // ===== CONFIG =====
-    // Set this to your Formspree endpoint to enable automatic submission.
-    // Leave empty ("") to skip remote submission and just offer a JSON download.
-    const FORMSPREE_URL = "";
+    // Same Formspree endpoint as the other studies (T2, ...). Submissions are
+    // tagged with `study: STUDY_LABEL` so they can be filtered downstream.
+    const FORMSPREE_URL = "https://formspree.io/f/xbdwokdz";
     const STUDY_LABEL = "T6_basketball";
     const STORAGE_SESSION = "t6_basketball_session";
     const STORAGE_SCORES = "t6_basketball_scores";
@@ -130,12 +130,6 @@
 
     function hideMessages() {
         els.errorMessage.style.display = "none";
-        els.savedMessage.style.display = "none";
-    }
-
-    function showError(msg) {
-        els.errorMessage.textContent = msg;
-        els.errorMessage.style.display = "block";
         els.savedMessage.style.display = "none";
     }
 
