@@ -10,9 +10,13 @@
     // Same Formspree endpoint as the other studies (T2, ...). Submissions are
     // tagged with `study: STUDY_LABEL` so they can be filtered downstream.
     const FORMSPREE_URL = "https://formspree.io/f/xbdwokdz";
-    const STUDY_LABEL = "T6_basketball";
-    const STORAGE_SESSION = "t6_basketball_session";
-    const STORAGE_SCORES = "t6_basketball_scores";
+
+    // sport is set by review.html before loading this script
+    const sport = window.T6_SPORT || "basketball";
+    const STUDY_LABEL = `T6_${sport}`;
+    const STORAGE_SESSION = `t6_${sport}_session`;
+    const STORAGE_SCORES = `t6_${sport}_scores`;
+    const SAMPLES = window.SAMPLES || [];
     const TOTAL = SAMPLES.length;
 
     // ===== Session bootstrap =====
@@ -21,7 +25,7 @@
         session = JSON.parse(localStorage.getItem(STORAGE_SESSION) || "null");
     } catch (_) { session = null; }
     if (!session || !session.userId) {
-        window.location.href = "index.html";
+        window.location.href = `start.html?sport=${sport}`;
         return;
     }
     document.getElementById("navUserId").textContent = session.userId;
@@ -165,6 +169,7 @@
     function buildPayload() {
         return {
             study: STUDY_LABEL,
+            sport: sport,
             user_id: session.userId,
             email: session.userEmail || "",
             session_id: session.sessionId,
@@ -183,7 +188,7 @@
         const a = document.createElement("a");
         const safeId = (session.userId || "user").replace(/[^a-zA-Z0-9_-]/g, "_");
         a.href = url;
-        a.download = `t6_basketball_${safeId}_${session.sessionId}.json`;
+        a.download = `t6_${sport}_${safeId}_${session.sessionId}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

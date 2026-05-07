@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basketball Report Review - T6</title>
+    <title>Sports Report Review - T6</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
@@ -11,7 +11,7 @@
 <body>
     <nav class="navbar">
         <div class="nav-left">
-            <span class="nav-title">Basketball Report Review</span>
+            <span class="nav-title" id="navTitle">Report Review</span>
             <span class="nav-user">User: <strong id="navUserId">…</strong></span>
         </div>
         <div class="nav-right">
@@ -88,7 +88,32 @@
         </div>
     </div>
 
-    <script src="data/samples_basketball.js"></script>
-    <script src="js/review.js"></script>
+    <script>
+        // Determine sport from ?sport= param, then load data file followed by review.js.
+        (function () {
+            const params = new URLSearchParams(window.location.search);
+            const sport = params.get("sport") || "basketball";
+            const SPORTS = {basketball: "Basketball", hockey: "Hockey", soccer: "Soccer"};
+            if (!SPORTS[sport]) { window.location.href = "index.html"; return; }
+            window.T6_SPORT = sport;
+            window.T6_SPORT_LABEL = SPORTS[sport];
+            document.getElementById("navTitle").textContent = `${SPORTS[sport]} Report Review`;
+            document.title = `${SPORTS[sport]} Report Review - T6`;
+
+            const s1 = document.createElement("script");
+            s1.src = `data/samples_${sport}.js`;
+            s1.onload = () => {
+                const s2 = document.createElement("script");
+                s2.src = "js/review.js";
+                document.body.appendChild(s2);
+            };
+            s1.onerror = () => {
+                document.body.innerHTML = `<div style="padding:40px;text-align:center;">
+                    <h2>Failed to load data for ${SPORTS[sport]}</h2>
+                    <p><a href="index.html">Return to sport selection</a></p></div>`;
+            };
+            document.body.appendChild(s1);
+        })();
+    </script>
 </body>
 </html>
