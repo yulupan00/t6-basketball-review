@@ -91,10 +91,8 @@
                 <i class="bi bi-robot"></i>
                 LLM-judge reference for this report
             </div>
-            <div class="judge-reference-scores">
-                <span class="judge-pill"><span class="judge-pill-label">Overall</span><span class="judge-pill-value" id="judgeOverall">–</span></span>
-                <span class="judge-pill"><span class="judge-pill-label">Style</span><span class="judge-pill-value" id="judgeStyle">–</span></span>
-                <span class="judge-pill"><span class="judge-pill-label">Narrative</span><span class="judge-pill-value" id="judgeNarr">–</span></span>
+            <div class="judge-reference-rows" id="judgeRows">
+                <!-- one row per judge; populated by style.js -->
             </div>
         </div>
 
@@ -147,26 +145,30 @@
             document.getElementById("navTitle").textContent = `${SPORTS[sport]} Writing Style Review`;
             document.title = `${SPORTS[sport]} Writing Style Review - T6`;
 
-            // Load samples → style-judge reference → style.js
-            const s1 = document.createElement("script");
-            s1.src = `data/samples_${sport}.js`;
-            s1.onload = () => {
-                const sj = document.createElement("script");
-                sj.src = `data/style_judge_${sport}.js`;
-                // Judge file is reference-only; missing/broken should not block the review.
-                sj.onload = sj.onerror = () => {
-                    const s2 = document.createElement("script");
-                    s2.src = "js/style.js";
-                    document.body.appendChild(s2);
-                };
-                document.body.appendChild(sj);
-            };
-            s1.onerror = () => {
-                document.body.innerHTML = `<div style="padding:40px;text-align:center;">
-                    <h2>Failed to load data for ${SPORTS[sport]}</h2>
-                    <p><a href="index.html">Return to study selection</a></p></div>`;
-            };
-            document.body.appendChild(s1);
+            // Try the v2 style-samples file first (has judges embedded per item).
+            // If that fails, fall back to the v1 samples + separate style_judge file.
+            function loadScript(src, onload, onerror) {
+                const s = document.createElement("script");
+                s.src = src;
+                s.onload = onload;
+                s.onerror = onerror;
+                document.body.appendChild(s);
+            }
+            function startReview() {
+                loadScript("js/style.js");
+            }
+            loadScript(`data/style_samples_${sport}.js`,
+                /*onload (v2 path):*/ () => startReview(),
+                /*onerror -> v1 fallback:*/ () => {
+                    loadScript(`data/samples_${sport}.js`,
+                        () => loadScript(`data/style_judge_${sport}.js`,
+                                         startReview, startReview),
+                        () => {
+                            document.body.innerHTML = `<div style="padding:40px;text-align:center;">
+                                <h2>Failed to load data for ${SPORTS[sport]}</h2>
+                                <p><a href="index.html">Return to study selection</a></p></div>`;
+                        });
+                });
         })();
     </script>
 </body>

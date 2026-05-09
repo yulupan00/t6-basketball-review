@@ -49,7 +49,7 @@ def read_prompt(sport, cid):
 
 def main():
     for sport in SPORTS:
-        # --- Samples (with prompt_text injected per item) ---
+        # --- Saliency / style v1 samples (with prompt_text injected per item) ---
         src = os.path.join(HERE, "..", f"human_study_samples_{sport}_subset.json")
         dst = os.path.join(HERE, "data", f"samples_{sport}.js")
         if os.path.exists(src):
@@ -67,7 +67,7 @@ def main():
         else:
             print(f"  skip samples ({sport}): {src} not found")
 
-        # --- Style-judge reference (compact) ---
+        # --- Style-judge reference (compact, v1 hockey/soccer) ---
         src_j = os.path.join(HERE, "..", f"model_style_{sport}_subset.json")
         dst_j = os.path.join(HERE, "data", f"style_judge_{sport}.js")
         if os.path.exists(src_j):
@@ -85,6 +85,17 @@ def main():
             print(f"Wrote {len(compact)} style-judge rows ({sport}) -> {dst_j}")
         else:
             print(f"  skip style judge ({sport}): {src_j} not found")
+
+    # --- Writing-style v2 (basketball only): 45 reports with embedded gpt + qwen judge ---
+    src_v2 = os.path.join(HERE, "..", "human_study_style_samples_basketball_v2.json")
+    dst_v2 = os.path.join(HERE, "data", "style_samples_basketball.js")
+    if os.path.exists(src_v2):
+        with open(src_v2) as f:
+            samples = json.load(f)
+        write_js(dst_v2, "SAMPLES", samples, "basketball style v2 (45 reports, two-judge)")
+        print(f"Wrote {len(samples)} v2 style samples (basketball) -> {dst_v2}")
+    else:
+        print(f"  skip v2 style samples: {src_v2} not found")
 
 
 if __name__ == "__main__":

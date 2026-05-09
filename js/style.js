@@ -13,8 +13,7 @@
     const STORAGE_SCORES  = `t6_style_${sport}_scores`;
     const SAMPLES = window.SAMPLES || [];
     const TOTAL = SAMPLES.length;
-    const JUDGE = window.STYLE_JUDGE || [];
-    const JUDGE_BY_ID = Object.fromEntries(JUDGE.map(r => [String(r.id), r]));
+    // v1 fallback judge data is read from window.STYLE_JUDGE inside renderJudgeReference().
 
     // Session bootstrap
     let session;
@@ -38,9 +37,7 @@
         promptText: document.getElementById("promptText"),
         radios:     document.querySelectorAll("input[name=overall]"),
         judgeReference: document.getElementById("judgeReference"),
-        judgeOverall: document.getElementById("judgeOverall"),
-        judgeStyle:   document.getElementById("judgeStyle"),
-        judgeNarr:    document.getElementById("judgeNarr"),
+        judgeRows:      document.getElementById("judgeRows"),
         errorMessage: document.getElementById("errorMessage"),
         savedMessage: document.getElementById("savedMessage"),
         prevBtn:   document.getElementById("prevBtn"),
@@ -59,6 +56,38 @@
     };
 
     let currentIdx = 0;
+
+    function fmt(v) { return (v == null) ? "–" : v; }
+
+    function judgeRowHtml(name, scores) {
+        if (!scores) return "";
+        return `<div class="judge-row">
+            <span class="judge-row-name">${name}</span>
+            <span class="judge-pill"><span class="judge-pill-label">Overall</span><span class="judge-pill-value">${fmt(scores.overall)}</span></span>
+            <span class="judge-pill"><span class="judge-pill-label">Style</span><span class="judge-pill-value">${fmt(scores.stylistic)}</span></span>
+            <span class="judge-pill"><span class="judge-pill-label">Narrative</span><span class="judge-pill-value">${fmt(scores.narrative)}</span></span>
+        </div>`;
+    }
+
+    function renderJudgeReference(sample) {
+        if (!els.judgeReference || !els.judgeRows) return;
+        let html = "";
+        // v2: sample.judges = {gpt: {...}, qwen: {...}}
+        if (sample && sample.judges && (sample.judges.gpt || sample.judges.qwen)) {
+            html += judgeRowHtml("GPT-judge",  sample.judges.gpt);
+            html += judgeRowHtml("Qwen-judge", sample.judges.qwen);
+        } else {
+            // v1 fallback: a single judge keyed by sample.id in window.STYLE_JUDGE
+            const j = (window.STYLE_JUDGE || []).find(r => String(r.id) === String(sample.id));
+            if (j) html += judgeRowHtml("LLM-judge", j);
+        }
+        if (html) {
+            els.judgeRows.innerHTML = html;
+            els.judgeReference.style.display = "block";
+        } else {
+            els.judgeReference.style.display = "none";
+        }
+    }
 
     function selectedScore() {
         for (const r of els.radios) if (r.checked) return parseInt(r.value, 10);
@@ -85,17 +114,11 @@
             clearRadios();
         }
 
-        // Populate the LLM-judge reference for this item
-        const j = JUDGE_BY_ID[String(sample.id)];
-        const fallback = function (v) { return (v == null) ? "–" : v; };
-        if (j && els.judgeReference) {
-            els.judgeReference.style.display = "flex";
-            els.judgeOverall.textContent = fallback(j.overall);
-            els.judgeStyle.textContent   = fallback(j.stylistic);
-            els.judgeNarr.textContent    = fallback(j.narrative);
-        } else if (els.judgeReference) {
-            els.judgeReference.style.display = "none";
-        }
+        // Populate the LLM-judge reference for this item.
+        // Two data shapes are supported:
+        //   v2 (basketball, 45-report): sample.judges = {gpt:{...}, qwen:{...}}
+        //   v1 (hockey/soccer):         window.STYLE_JUDGE indexed by id, single judge
+        renderJudgeReference(sample);
 
         hideMessages();
         updateButtons();
