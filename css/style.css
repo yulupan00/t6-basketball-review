@@ -235,6 +235,52 @@ body {
     color: #fff;
 }
 
+/* === LLM-judge reference panel (writing-style review) === */
+.judge-reference {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+.judge-reference-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.judge-reference-label i { font-size: 1rem; color: #94a3b8; }
+.judge-reference-scores { display: flex; gap: 10px; flex-wrap: wrap; }
+.judge-pill {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #cbd5e1;
+}
+.judge-pill-label {
+    font-size: 0.7rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-weight: 600;
+}
+.judge-pill-value {
+    font-weight: 700;
+    color: #1e3a5f;
+    font-size: 1rem;
+}
+
 /* === Resume banner === */
 .resume-banner {
     background: #fff7ed;

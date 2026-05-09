@@ -13,6 +13,8 @@
     const STORAGE_SCORES  = `t6_style_${sport}_scores`;
     const SAMPLES = window.SAMPLES || [];
     const TOTAL = SAMPLES.length;
+    const JUDGE = window.STYLE_JUDGE || [];
+    const JUDGE_BY_ID = Object.fromEntries(JUDGE.map(r => [String(r.id), r]));
 
     // Session bootstrap
     let session;
@@ -34,6 +36,10 @@
         itemMeta:   document.getElementById("itemMeta"),
         modelText:  document.getElementById("modelText"),
         radios:     document.querySelectorAll("input[name=overall]"),
+        judgeReference: document.getElementById("judgeReference"),
+        judgeOverall: document.getElementById("judgeOverall"),
+        judgeStyle:   document.getElementById("judgeStyle"),
+        judgeNarr:    document.getElementById("judgeNarr"),
         errorMessage: document.getElementById("errorMessage"),
         savedMessage: document.getElementById("savedMessage"),
         prevBtn:   document.getElementById("prevBtn"),
@@ -73,6 +79,18 @@
             setSelectedScore(existing.overall);
         } else {
             clearRadios();
+        }
+
+        // Populate the LLM-judge reference for this item
+        const j = JUDGE_BY_ID[String(sample.id)];
+        const fallback = function (v) { return (v == null) ? "–" : v; };
+        if (j && els.judgeReference) {
+            els.judgeReference.style.display = "flex";
+            els.judgeOverall.textContent = fallback(j.overall);
+            els.judgeStyle.textContent   = fallback(j.stylistic);
+            els.judgeNarr.textContent    = fallback(j.narrative);
+        } else if (els.judgeReference) {
+            els.judgeReference.style.display = "none";
         }
 
         hideMessages();
