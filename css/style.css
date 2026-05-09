@@ -179,6 +179,20 @@ body {
 }
 .rubric-scale { list-style: none !important; margin-left: 0 !important; }
 .rubric-scale li { padding: 4px 0; }
+.prompt-text {
+    margin: 0 0 16px;
+    padding: 12px 14px;
+    background: #fcfcfd;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: #333;
+    white-space: pre-wrap;
+    max-height: 260px;
+    overflow-y: auto;
+}
 .rubric-num {
     display: inline-block;
     width: 22px;

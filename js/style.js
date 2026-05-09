@@ -35,6 +35,7 @@
         itemNumber: document.getElementById("itemNumber"),
         itemMeta:   document.getElementById("itemMeta"),
         modelText:  document.getElementById("modelText"),
+        promptText: document.getElementById("promptText"),
         radios:     document.querySelectorAll("input[name=overall]"),
         judgeReference: document.getElementById("judgeReference"),
         judgeOverall: document.getElementById("judgeOverall"),
@@ -73,6 +74,9 @@
         els.itemNumber.textContent = `${currentIdx + 1} of ${TOTAL}`;
         els.itemMeta.textContent = `component #${sample.component_id}`;
         els.modelText.textContent = sample.model_text;
+        if (els.promptText) {
+            els.promptText.textContent = sample.prompt_text || "(no prompt available)";
+        }
 
         const existing = scores[String(sample.id)];
         if (existing && typeof existing.overall === "number") {

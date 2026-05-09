@@ -1,12 +1,16 @@
 """
 Regenerate static-site data files:
-  - data/samples_<sport>.js          → window.SAMPLES (used by both studies)
+  - data/samples_<sport>.js          → window.SAMPLES (used by both studies);
+                                       also embeds prompt_text per sample so
+                                       the writing-style page can show the
+                                       report's topic/prompt as a reference.
   - data/style_judge_<sport>.js      → window.STYLE_JUDGE (writing-style scores
                                        shown as a reference on style.html)
 
 Sources:
   - human_study_samples_<sport>_subset.json  (sample text / facts)
   - model_style_<sport>_subset.json          (writing-style judge scores)
+  - <components_root>/<cid>/prompt.txt       (report-generation prompt)
 """
 
 import json
@@ -14,6 +18,13 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SPORTS = ["basketball", "hockey", "soccer"]
+
+# Where each sport's per-component folders live (so we can read prompt.txt).
+COMPONENT_ROOTS = {
+    "basketball": "/mnt/opr/yulupan/basketball_QA_dataset/video_captioning/game_report/long_form_report_generation_template/basketball_report/single_game_report/1204_basketball_components/Q1",
+    "hockey":     "/mnt/opr/yulupan/basketball_QA_dataset/video_captioning/game_report/long_form_report_generation_template/hockey_report/0108_hockey_single_game_components/Q1",
+    "soccer":     "/mnt/opr/yulupan/basketball_QA_dataset/video_captioning/game_report/long_form_report_generation_template/soccer_report/0128_single_game_component/0128_Q1_soccer_components",
+}
 
 
 def write_js(dst, varname, value, header):
@@ -24,20 +35,39 @@ def write_js(dst, varname, value, header):
         f.write(";\n")
 
 
+def read_prompt(sport, cid):
+    """Read prompt.txt for a component, return None if missing."""
+    root = COMPONENT_ROOTS.get(sport)
+    if not root:
+        return None
+    path = os.path.join(root, str(cid), "prompt.txt")
+    if not os.path.exists(path):
+        return None
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read().strip()
+
+
 def main():
     for sport in SPORTS:
-        # Samples
+        # --- Samples (with prompt_text injected per item) ---
         src = os.path.join(HERE, "..", f"human_study_samples_{sport}_subset.json")
         dst = os.path.join(HERE, "data", f"samples_{sport}.js")
         if os.path.exists(src):
             with open(src) as f:
                 samples = json.load(f)
+            missing_prompts = []
+            for s in samples:
+                p = read_prompt(sport, s["component_id"])
+                if p is None:
+                    missing_prompts.append(s["component_id"])
+                s["prompt_text"] = p or ""
             write_js(dst, "SAMPLES", samples, sport)
-            print(f"Wrote {len(samples)} samples ({sport}) -> {dst}")
+            note = f"  ({len(missing_prompts)} missing prompts: {missing_prompts})" if missing_prompts else ""
+            print(f"Wrote {len(samples)} samples ({sport}) -> {dst}{note}")
         else:
             print(f"  skip samples ({sport}): {src} not found")
 
-        # Style-judge reference (compact: just the per-sample scores, no responses)
+        # --- Style-judge reference (compact) ---
         src_j = os.path.join(HERE, "..", f"model_style_{sport}_subset.json")
         dst_j = os.path.join(HERE, "data", f"style_judge_{sport}.js")
         if os.path.exists(src_j):
