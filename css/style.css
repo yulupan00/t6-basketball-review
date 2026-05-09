@@ -125,6 +125,116 @@ body {
 .btn-hockey     { background: linear-gradient(135deg, #1e3a5f, #2d6a9f); }
 .btn-soccer     { background: linear-gradient(135deg, #15803d, #22c55e); }
 
+/* === Study-type chooser (index.html) === */
+.study-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+.btn-study {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 18px 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #fff;
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+}
+.btn-study:hover {
+    color: #fff;
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+.btn-study .study-name { font-weight: 700; font-size: 1.15rem; }
+.btn-study .study-desc { font-size: 0.85rem; opacity: 0.92; margin-top: 2px; }
+.btn-saliency { background: linear-gradient(135deg, #4338ca, #6366f1); }
+.btn-style    { background: linear-gradient(135deg, #b45309, #f59e0b); }
+
+/* === Writing-style review === */
+.rubric-body {
+    padding: 14px 20px 18px;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: #333;
+    overflow-y: auto;
+    max-height: 560px;
+    flex: 1;
+}
+.rubric-body ul {
+    list-style: disc;
+    margin: 4px 0 14px 22px;
+    padding: 0;
+}
+.rubric-body li { margin: 3px 0; }
+.rubric-section-title {
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #1e3a5f;
+    margin: 6px 0 4px;
+}
+.rubric-scale { list-style: none !important; margin-left: 0 !important; }
+.rubric-scale li { padding: 4px 0; }
+.rubric-num {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    border-radius: 50%;
+    background: #e8f0fe;
+    color: #1e3a5f;
+    font-weight: 700;
+    font-size: 0.78rem;
+    margin-right: 8px;
+}
+
+.score-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 28px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+.score-prompt {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1e3a5f;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.score-radio-group { display: flex; gap: 10px; }
+.score-radio { cursor: pointer; user-select: none; }
+.score-radio input[type=radio] { display: none; }
+.score-radio span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #444;
+    background: #fff;
+    transition: all 0.15s;
+}
+.score-radio:hover span { border-color: #2d6a9f; background: #f0f6ff; color: #1e3a5f; }
+.score-radio input[type=radio]:checked + span {
+    border-color: #2d6a9f;
+    background: #2d6a9f;
+    color: #fff;
+}
+
 /* === Resume banner === */
 .resume-banner {
     background: #fff7ed;
